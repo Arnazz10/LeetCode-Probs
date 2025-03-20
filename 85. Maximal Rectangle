@@ -1,0 +1,56 @@
+import java.util.*;
+
+class Solution {
+    public int maximalRectangle(char[][] matrix) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) return 0;
+
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        int[] heights = new int[cols]; // Histogram heights
+        int maxRectangle = 0;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                // Convert '1' and '0' to integer heights
+                heights[j] = (matrix[i][j] == '1') ? heights[j] + 1 : 0;
+            }
+            // Compute largest rectangle for the current histogram
+            maxRectangle = Math.max(maxRectangle, largestRectangleArea(heights));
+        }
+
+        return maxRectangle;
+    }
+
+    private int largestRectangleArea(int[] heights) {
+        Stack<Integer> stack = new Stack<>();
+        int maxArea = 0;
+        int n = heights.length;
+
+        for (int i = 0; i <= n; i++) {
+            int currentHeight = (i == n) ? 0 : heights[i];
+
+            while (!stack.isEmpty() && currentHeight < heights[stack.peek()]) {
+                int height = heights[stack.pop()];
+                int width = stack.isEmpty() ? i : i - stack.peek() - 1;
+                maxArea = Math.max(maxArea, height * width);
+            }
+
+            stack.push(i);
+        }
+
+        return maxArea;
+    }
+
+    // Main method to test the function
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        char[][] matrix = {
+            {'1', '0', '1', '0', '0'},
+            {'1', '0', '1', '1', '1'},
+            {'1', '1', '1', '1', '1'},
+            {'1', '0', '0', '1', '0'}
+        };
+
+        System.out.println("Maximal Rectangle Area: " + solution.maximalRectangle(matrix));
+    }
+}
